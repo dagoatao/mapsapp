@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html ng-app="recat">
+  <head>
+    <title>Leaflet Quick Start Guide Example</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://code.jquery.com/jquery-3.0.0.min.js" integrity="sha256-JmvOoLtYsmqlsWxa7mDSLMwa6dZ9rrIdtrrVYRnDRH0=" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+  </head>
+  <body>
+    <div id="index">
+    <div id="titlebar">
+      <h1>Maps</h1>
+    </div>
+    <div id="tools">
+      <button id="plyadd" value=0>Add Polygon</button>
+      <button id="lineadd" value=0>Add Line</button>
+      <button id="plysave" value=0>Save Polygon</button>
+      <button id="mrkadd" value=0><img src="images/add-pointer.png" style="width:20px;height:20px;"/></button>
+      <button id="ico1" class='custom-marker' value=0><img src="images/beer.png" style="width:20px;height:20px;"/></button>
+      <button id="ico2" class='custom-marker' value=0><img src="images/coffee.png" style="width:20px;height:20px;"/></button>
+      <button id="ico3" class='custom-marker' value=0><img src="images/hamburger.png" style="width:20px;height:20px;"/></button>
+      <button id="ico4" class='custom-marker' value=0><img src="images/pizza.png" style="width:20px;height:20px;"/></button>
+      <button id="ico5" class='custom-marker' value=0><img src="images/swimming-figure.png" style="width:20px;height:20px;"/></button>
+      <button id="ico6" class='custom-marker' value=0><img src="images/cart.png" style="width:20px;height:20px;"/></button>
+      <button id="ico7" class='custom-marker' value=0><img src="images/sleep.png" style="width:20px;height:20px;"/></button>
+      <button id="ico7" class='custom-marker' value=0><img src="images/car.png" style="width:20px;height:20px;"/></button>
+      <button id="ico7" class='custom-marker' value=0><img src="images/cocktail.png" style="width:20px;height:20px;"/></button>
+      <button id="ico7" class='custom-marker' value=0><img src="images/broccoli.png" style="width:20px;height:20px;"/></button>
+      <button id="ico7" class='custom-marker' value=0><img src="images/fries.png" style="width:20px;height:20px;"/></button>
+      <button id="ico7" class='custom-marker' value=0><img src="images/minivan.png" style="width:20px;height:20px;"/></button>
+      <button id="ico7" class='custom-marker' value=0><img src="images/notes.png" style="width:20px;height:20px;"/></button>
+      <button id="ico7" class='custom-marker' value=0><img src="images/pin.png" style="width:20px;height:20px;"/></button>
+      <button id="ico7" class='custom-marker' value=0><img src="images/placeholder-1.png" style="width:20px;height:20px;"/></button>
+    </div>
+    <div id="f">something here</div>
+    <div id="mapid" style="width: 100%; height: 500px"></div>
+    <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+    <script>
+      var mymap = L.map('mapid').setView([40.33346, -75.93922], 13);
+      L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw', {
+        maxZoom: 18,
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+          '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+          'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        id: 'mapbox.streets'
+      }).addTo(mymap);
+      L.marker([40.33346, -75.93922]).addTo(mymap)
+        .bindPopup("<b>Starting Point</b>").openPopup();
+      L.circle([40.33346, -75.93922], 100, {
+        color: 'red',
+        fillColor: '#f03',
+        fillOpacity: 0.5
+      }).addTo(mymap).bindPopup("I am a circle.");
+
+      var area;
+      // = L.polygon([
+      //   [40.30544, -75.97518],
+      //   [40.33509, -75.95844],
+      //   [40.33489, -75.93956],
+      //   [40.3057, -75.89802]
+      // ]).addTo(mymap).bindPopup("I am a polygon.");
+
+      function iconForImage(path) {
+        return L.icon({
+          iconUrl: path,
+          iconSize:     [38, 38], // size of the icon
+          shadowSize:   [50, 64], // size of the shadow
+          iconAnchor:   [20, 40], // point of the icon which will correspond to marker's location
+          shadowAnchor: [4, 62],  // the same for the shadow
+          popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+        });
+    }
+
+
+
+      var popup = L.popup()
+      var comment = document.querySelector("#f");
+      var customMarker = 0;
+      var iconImagePath = null;
+
+      function plySave(layer) {
+        if (mymap.hasLayer(layer)) {
+          var shape = layer.toGeoJSON()
+          var shape_for_db = JSON.stringify(shape);
+          document.querySelector("#f").innerHTML = shape_for_db;
+        } else {
+          document.querySelector("#f").innerHTML = "no polygon";
+        }
+      }
+
+      function onPlyClear(e) {
+        mymap.removeLayer(area);
+      }
+
+      function onMarkerPopupOpen() {
+         var temp = this;
+         // To remove marker on click of delete button in the popup of marker
+         $(".delete-marker:visible").click(function () {
+          mymap.removeLayer(temp);
+         });
+      }
+      function onPolygonPopupOpen() {
+         var temp = this;
+         // To remove marker on click of delete button in the popup of marker
+         $(".delete-polygon:visible").click(function () {
+          mymap.removeLayer(temp);
+         });
+      }
+      function onLinePopupOpen() {
+        var temp = this;
+        // To remove marker on click of delete button in the popup of marker
+        $(".delete-line:visible").click(function () {
+         mymap.removeLayer(temp);
+        });
+      }
+
+      var currentPolygon=null;
+      var currentLine=null;
+      function onMapClick(e) {
+        if (document.querySelector('#plyadd').value == 1) {
+          if (currentPolygon) {
+            currentPolygon.addLatLng(e.latlng);
+          } else {
+            var p = L.polygon(e.latlng).bindPopup("<input type='button' value='Delete' class='delete-polygon'/>");
+            p.on("popupopen", onPolygonPopupOpen);
+            mymap.addLayer(p);
+            currentPolygon=p;
+          }
+        } else if (document.querySelector('#lineadd').value==1) {
+          if ( currentLine) {
+            currentLine.addLatLng(e.latlng);
+          } else {
+            var line = L.polyline([e.latlng], {color: 'green'}).addTo(mymap).bindPopup("<input type='button' value='Delete' class='delete-line'/>")
+            .on("popupopen", onLinePopupOpen);
+            currentLine = line;
+          }
+        } else if (document.querySelector('#mrkadd').value==1) {
+          tmp = L.marker(e.latlng, {icon:iconForImage(iconImagePath)}).bindPopup("<input type='button' value='Delete' class='delete-marker'/>");
+          tmp.on("popupopen", onMarkerPopupOpen);
+          tmp.addTo(mymap);
+        } else {
+          p = L.popup()
+            .setLatLng(e.latlng)
+            .setContent("You clicked the map at "+ e.latlng);
+            mymap.openPopup(p);
+        }
+
+      }
+      mymap.on('click', onMapClick);
+
+      $(document).ready(function() {
+
+        $('#plyadd').bind({
+          click: function() {
+            e = $(this);
+            e.val( (e.val()==1) ? 0 : 1 );
+            e.css("background-color", ( (e.val()==1) ? "blue" : "white" ));
+            if (e.val()==0) currentPolygon=null;
+          }
+        });
+
+        $('#lineadd').bind({
+          click: function() {
+            e = $(this);
+            e.val( (e.val()==1) ? 0 : 1 );
+            e.css("background-color", ( (e.val()==1) ? "blue" : "white" ));
+            if (e.val()==0) currentLine=null;
+          }
+        });
+
+        $('.custom-marker').bind({
+          click: function() {
+            $('.custom-marker').css("background-color", "white");
+            e = $(this);
+            e.val( (e.val()==1) ? 0 : 1 );
+            e.css("background-color", ( (e.val()==1) ? "blue" : "white" ));
+            iconImagePath = e.children().first().attr('src');
+          }
+        });
+        //
+        // $('#ico1').bind({
+        //   click: function() {
+        //     e = $(this);
+        //     e.val( (e.val()==1) ? 0 : 1 );
+        //     e.css("background-color", ( (e.val()==1) ? "blue" : "white" ));
+        //   }
+        // });
+        // $('#ico2').bind({
+        //   click: function() {
+        //     e = $(this);
+        //     e.val( (e.val()==1) ? 0 : 1 );
+        //     e.css("background-color", ( (e.val()==1) ? "blue" : "white" ));
+        //   }
+        // });
+        // $('#ico3').bind({
+        //   click: function() {
+        //     e = $(this);
+        //     e.val( (e.val()==1) ? 0 : 1 );
+        //     e.css("background-color", ( (e.val()==1) ? "blue" : "white" ));
+        //   }
+        // });
+        $('#plysave').bind({
+          click: function() {
+            plySave(area);
+          }
+        });
+
+
+        $('#mrkadd').bind({
+          click: function() {
+            if ($(this).val() == 1) {
+              $(this).val(0);
+              $(this).css("background-color", "white");
+              $("#f").html(" ");
+            } else {
+              $(this).val(1);
+              $(this).css("background-color", "blue");
+              $('#f').html("<input type='text' title='marker' value=''/><button id='whatisit'>Save</button>");
+            }
+          }
+        });
+
+      });
+
+
+
+
+      </script>
+
+
+</div>
+  </body>
+  </html>

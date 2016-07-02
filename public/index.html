@@ -5,35 +5,28 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://code.jquery.com/jquery-3.0.0.min.js" integrity="sha256-JmvOoLtYsmqlsWxa7mDSLMwa6dZ9rrIdtrrVYRnDRH0=" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js" integrity="sha256-xNjb53/rY+WmG+4L6tTl9m6PpqknWZvRt0rO1SRnJzw=" crossorigin="anonymous"></script>
+  <!--<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/south-street/jquery-ui.css"/>-->
+  <link rel="stylesheet" href="style.css"/>
 	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css">
   </head>
   <body>
-    <div id="index">
     <div id="titlebar">
-      <h1>Maps</h1>
+      <span id="title">Maps</span>
+      <div id="tools">
+        <span class='tool1'>
+          <button id="plyadd" value=0><img src="images/icons/polygon.png" style="width:20px;height:20px;"/></button> <span class='space'>|</span>
+        </span>
+        <span class='tool2'>
+          <button id="lineadd" value=0><img src="images/icons/communication.png" style="width:20px;height:20px;"/></button> <span class='space'> | </span>
+        </span>
+        <span class='tool3'>
+          <button id="mrkadd" value=0><img src="images/icons/add-pointer.png" style="width:20px;height:20px;"/></button> : <span id="markers"></span>
+        </span>
+      </div>
     </div>
-    <div id="tools">
-      <button id="plyadd" value=0>Add Polygon</button>
-      <button id="lineadd" value=0>Add Line</button>
-      <button id="plysave" value=0>Save Polygon</button>
-      <button id="mrkadd" value=0><img src="images/add-pointer.png" style="width:20px;height:20px;"/></button>
-      <button id="ico1" class='custom-marker' value=0><img src="images/beer.png" style="width:20px;height:20px;"/></button>
-      <button id="ico2" class='custom-marker' value=0><img src="images/coffee.png" style="width:20px;height:20px;"/></button>
-      <button id="ico3" class='custom-marker' value=0><img src="images/hamburger.png" style="width:20px;height:20px;"/></button>
-      <button id="ico4" class='custom-marker' value=0><img src="images/pizza.png" style="width:20px;height:20px;"/></button>
-      <button id="ico5" class='custom-marker' value=0><img src="images/swimming-figure.png" style="width:20px;height:20px;"/></button>
-      <button id="ico6" class='custom-marker' value=0><img src="images/cart.png" style="width:20px;height:20px;"/></button>
-      <button id="ico7" class='custom-marker' value=0><img src="images/sleep.png" style="width:20px;height:20px;"/></button>
-      <button id="ico7" class='custom-marker' value=0><img src="images/car.png" style="width:20px;height:20px;"/></button>
-      <button id="ico7" class='custom-marker' value=0><img src="images/cocktail.png" style="width:20px;height:20px;"/></button>
-      <button id="ico7" class='custom-marker' value=0><img src="images/broccoli.png" style="width:20px;height:20px;"/></button>
-      <button id="ico7" class='custom-marker' value=0><img src="images/fries.png" style="width:20px;height:20px;"/></button>
-      <button id="ico7" class='custom-marker' value=0><img src="images/minivan.png" style="width:20px;height:20px;"/></button>
-      <button id="ico7" class='custom-marker' value=0><img src="images/notes.png" style="width:20px;height:20px;"/></button>
-      <button id="ico7" class='custom-marker' value=0><img src="images/pin.png" style="width:20px;height:20px;"/></button>
-      <button id="ico7" class='custom-marker' value=0><img src="images/placeholder-1.png" style="width:20px;height:20px;"/></button>
-    </div>
-    <div id="f">something here</div>
     <div id="mapid" style="width: 100%; height: 500px"></div>
     <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
     <script>
@@ -72,20 +65,19 @@
         });
     }
 
-
-
       var popup = L.popup()
-      var comment = document.querySelector("#f");
+      //var comment = document.querySelector("#f");
       var customMarker = 0;
       var iconImagePath = null;
+      var currentColor=null;
 
       function plySave(layer) {
         if (mymap.hasLayer(layer)) {
           var shape = layer.toGeoJSON()
           var shape_for_db = JSON.stringify(shape);
-          document.querySelector("#f").innerHTML = shape_for_db;
+          //document.querySelector("#f").innerHTML = shape_for_db;
         } else {
-          document.querySelector("#f").innerHTML = "no polygon";
+          //document.querySelector("#f").innerHTML = "no polygon";
         }
       }
 
@@ -99,13 +91,40 @@
          $(".delete-marker:visible").click(function () {
           mymap.removeLayer(temp);
          });
+         $(".flip-marker:visible").click(function() {
+
+         });
       }
       function onPolygonPopupOpen() {
          var temp = this;
          // To remove marker on click of delete button in the popup of marker
          $(".delete-polygon:visible").click(function () {
-          mymap.removeLayer(temp);
+           mymap.removeLayer(temp);
          });
+         $(".color-polygon:visible").click(function() {
+           temp.setStyle({
+             color:"black"
+           });
+         });
+         $(".hide:visible").click(function() {
+
+         });
+         $(".colorpicker:visible").spectrum({
+            color: "#f00",
+            change: function(color) {
+                currentColor=color.toHexString();
+                temp.setStyle({
+                  color:currentColor
+                });
+            }
+          });
+          $(".opacityselect:visible").change(function() {
+            temp.setStyle({
+              opacity:$(".opacityselect:visible").val(),
+              fillOpacity:$(".opacityselect:visible").val()-0.2
+            })
+          });
+
       }
       function onLinePopupOpen() {
         var temp = this;
@@ -113,6 +132,20 @@
         $(".delete-line:visible").click(function () {
          mymap.removeLayer(temp);
         });
+        $(".colorpicker:visible").spectrum({
+           color: "#f00",
+           change: function(color) {
+               currentColor=color.toHexString();
+               temp.setStyle({
+                 color:currentColor
+               });
+           }
+         });
+         $(".opacityselect:visible").change(function() {
+           temp.setStyle({
+             opacity:$(".opacityselect:visible").val()
+           })
+         });
       }
 
       var currentPolygon=null;
@@ -122,7 +155,27 @@
           if (currentPolygon) {
             currentPolygon.addLatLng(e.latlng);
           } else {
-            var p = L.polygon(e.latlng).bindPopup("<input type='button' value='Delete' class='delete-polygon'/>");
+            var p = L.polygon(e.latlng).bindPopup(
+              "<span>Color:</span>"+
+              "<input type='button' class='colorpicker' value='Color'/></br>"+
+              "<span>Opacity:</span>"+
+              "<div class='opacityslider'>"+
+                "<select class=opacityselect>" +
+                  "<option value=0.0>0.0</option>"+
+                  "<option value=0.1>0.1</option>"+
+                  "<option value=0.2>0.2</option>"+
+                  "<option value=0.3>0.3</option>"+
+                  "<option value=0.4>0.4</option>"+
+                  "<option value=0.5>0.5</option>"+
+                "   <option value=0.6>0.6</option>"+
+                "   <option value=0.7>0.7</option>"+
+                "   <option value=0.8>0.8</option>"+
+                "   <option value=0.9>0.9</option>"+
+                "   <option value=1.0>1.0</option>"+
+                "</select>"+
+              "</div>"+
+              "<input type='button' value='Delete' class='delete-polygon'/>"
+            );
             p.on("popupopen", onPolygonPopupOpen);
             mymap.addLayer(p);
             currentPolygon=p;
@@ -131,12 +184,19 @@
           if ( currentLine) {
             currentLine.addLatLng(e.latlng);
           } else {
-            var line = L.polyline([e.latlng], {color: 'green'}).addTo(mymap).bindPopup("<input type='button' value='Delete' class='delete-line'/>")
+            var line = L.polyline([e.latlng], {color: 'green'}).addTo(mymap).bindPopup(
+              "<input type='button' class='colorpicker' value='Color'/></br>"+
+              "<input type='button' value='Delete' class='delete-polygon'/>"
+            )
             .on("popupopen", onLinePopupOpen);
             currentLine = line;
           }
         } else if (document.querySelector('#mrkadd').value==1) {
-          tmp = L.marker(e.latlng, {icon:iconForImage(iconImagePath)}).bindPopup("<input type='button' value='Delete' class='delete-marker'/>");
+          tmp = null;
+          if (iconImagePath)
+            tmp = L.marker(e.latlng, {icon:iconForImage(iconImagePath)}).bindPopup("<input type='button' value='Delete' class='delete-marker'/>  <input type='button' value='Flip' class='flip-marker'/>");
+          else
+            tmp = L.marker(e.latlng).bindPopup("<input type='button' value='Delete' class='delete-marker'/>");
           tmp.on("popupopen", onMarkerPopupOpen);
           tmp.addTo(mymap);
         } else {
@@ -150,6 +210,8 @@
       mymap.on('click', onMapClick);
 
       $(document).ready(function() {
+        //$("#markers").append("this there");
+      // if ($("#mrkadd").val()==0) $("#markers").hide();
 
         $('#plyadd').bind({
           click: function() {
@@ -169,37 +231,15 @@
           }
         });
 
-        $('.custom-marker').bind({
-          click: function() {
+        $("body").on('click','.custom-marker', function() {
             $('.custom-marker').css("background-color", "white");
             e = $(this);
             e.val( (e.val()==1) ? 0 : 1 );
             e.css("background-color", ( (e.val()==1) ? "blue" : "white" ));
-            iconImagePath = e.children().first().attr('src');
-          }
+            iconImagePath = (e.val()==1) ? e.children().first().attr('src') : null;
+            $("#markers").append(iconImagePath);
         });
-        //
-        // $('#ico1').bind({
-        //   click: function() {
-        //     e = $(this);
-        //     e.val( (e.val()==1) ? 0 : 1 );
-        //     e.css("background-color", ( (e.val()==1) ? "blue" : "white" ));
-        //   }
-        // });
-        // $('#ico2').bind({
-        //   click: function() {
-        //     e = $(this);
-        //     e.val( (e.val()==1) ? 0 : 1 );
-        //     e.css("background-color", ( (e.val()==1) ? "blue" : "white" ));
-        //   }
-        // });
-        // $('#ico3').bind({
-        //   click: function() {
-        //     e = $(this);
-        //     e.val( (e.val()==1) ? 0 : 1 );
-        //     e.css("background-color", ( (e.val()==1) ? "blue" : "white" ));
-        //   }
-        // });
+
         $('#plysave').bind({
           click: function() {
             plySave(area);
@@ -212,14 +252,27 @@
             if ($(this).val() == 1) {
               $(this).val(0);
               $(this).css("background-color", "white");
-              $("#f").html(" ");
+              //$("#markers").hide();
+              //$("#f").html(" ");
             } else {
               $(this).val(1);
               $(this).css("background-color", "blue");
-              $('#f').html("<input type='text' title='marker' value=''/><button id='whatisit'>Save</button>");
+              // $("#markers").show();
+              //$('#f').html("<input type='text' title='marker' value=''/><button id='whatisit'>Save</button>");
             }
           }
         });
+
+        //$("button img").button();
+        $.getJSON( "/api/markers", function( data ) {
+           var items = [];
+           var count = 0;
+           $.each( data, function( index, val ) {
+             //$("#markers").append(index);
+             //if ( index > 15) return;
+             $("#markers").append('<button id="ico'+index+'" class="custom-marker" value=0><img src="images/markers/'+val+'" style="width:23px;height:23px;"/></button>');
+           });
+         });
 
       });
 
@@ -227,8 +280,5 @@
 
 
       </script>
-
-
-</div>
   </body>
   </html>

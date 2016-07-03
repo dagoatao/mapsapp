@@ -9,7 +9,7 @@ body {
   top: 0; left: 0; right: 0;
   border-bottom: 1px solid #1f1f1f;
   background: #353535;
-  height: 70px;
+  height: 30px;
   padding:0px;
 }
 
@@ -43,36 +43,25 @@ body {
 #titlebar #tools #markers {
   margin:0px;
   padding:5px;
-  position:absolute;
+  /*position:absolute;
   width:400px;
   height:30px;
   background-color: #000;
   overflow:auto;
-  white-space:nowrap;
+  white-space:nowrap;*/
 }
 
 #tools .tool1 {
   position:relative;
-  width:20%;
+
 }
 #tools .tool2 {
   position:relative;
-  width:20%;
+
 }
 #tools .tool3 {
   position:relative;
-  width:60%;
-}
 
-#markers .color {
-  width:20px;
-  height:20px;
-}
-
-#markers #blue {
-  background-color:blue;
-  color:blue;
-  background:blue;
 }
 
 .flip {

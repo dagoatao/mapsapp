@@ -6,9 +6,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="/js/jquery.js"</script>
   <script src="/js/jquery-ui.min.js"</script>
-  <!-- <script src="https://code.jquery.com/jquery-3.0.0.min.js" integrity="sha256-JmvOoLtYsmqlsWxa7mDSLMwa6dZ9rrIdtrrVYRnDRH0=" crossorigin="anonymous"></script> -->
-  <!-- <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js" integrity="sha256-xNjb53/rY+WmG+4L6tTl9m6PpqknWZvRt0rO1SRnJzw=" crossorigin="anonymous"></script> -->
-  <!--<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/south-street/jquery-ui.css"/>-->
 	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js"></script>
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css">
@@ -24,11 +21,10 @@
         <!-- Nav tabs -->
         <div class="sidebar-tabs">
             <ul role="tablist">
-                <li><a id='mrkadd'  href="#add_markers" role="tab"><i class="fa fa-bars"><img src='/images/icons/add-pointer.png' style='width:30px; height:30px;padding:5px;'/></i></a></li>
-                <li><a id='plyadd' href="#add_polygon" role="tab"><i class="fa fa-user"><img src='/images/icons/polygon.png' style='width:30px; height:30px;padding:5px;'/></i></a></li>
-                <li><a id='lineadd' href="#add_polyline" role="tab"><i class="fa fa-user"><img src='/images/icons/communication.png' style='width:30px; height:30px;padding:5px;'/></i></a></li>
+                <li><a id='marker' class='mapaddition' href="#add_markers" role="tab"><i class="fa fa-bars"><img src='/images/icons/add-pointer.png' style='width:30px; height:30px;padding:5px;'/></i></a></li>
+                <li><a id='polygon' class='mapaddition' href="#add_polygon" role="tab"><i class="fa fa-user"><img src='/images/icons/polygon.png' style='width:30px; height:30px;padding:5px;'/></i></a></li>
+                <li><a id='line' class='mapaddition' href="#add_polyline" role="tab"><i class="fa fa-user"><img src='/images/icons/communication.png' style='width:30px; height:30px;padding:5px;'/></i></a></li>
             </ul>
-
             <ul role="tablist">
                 <li><a href="#settings" role="tab"><i class="fa fa-gear"></i></a></li>
             </ul>
@@ -40,15 +36,16 @@
               <h1 class="sidebar-header">Add Markers<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
                 <span id="markers"></span>
             </div>
-
             <div class="sidebar-pane" id="add_polygon">
                 <h1 class="sidebar-header">Add Polygon<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+                <br/>
+                Default Color: <input type='button' class='defaultColor' value='Color'/></br>
             </div>
-
             <div class="sidebar-pane" id="add_polyline">
                 <h1 class="sidebar-header">Add Line<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+                <br/>
+                Default Color: <input type='button' class='defaultColor' value='Color'/></br>
             </div>
-
             <div class="sidebar-pane" id="settings">
                 <h1 class="sidebar-header">Settings<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
             </div>
@@ -56,16 +53,16 @@
     </div>
     <input type=hidden value="{{mapid}}" id="tmapid"/>
     <input type=hidden value="{{mapname}}" id="tmapname"/>
-    <div id="mapid" style="width: 100%; height: 600px; position:aboslute;"></div>
+    <div id="mapid" style="width: 100%; height:600px;"></div>
     <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
     <script src="/js/leaflet-sidebar.js"></script>
     <script>
-
       var area;
       var popup = L.popup()
       var customMarker = 0;
       var iconImagePath = null;
       var currentColor=null;
+      var defaultColor='#000';
       var currentPolygon=null;
       var currentLine=null;
       var mode = '';
@@ -82,20 +79,19 @@
           'Imagery © <a href="http://mapbox.com">Mapbox</a>',
         id: 'mapbox.streets'
       }).addTo(mymap);
-
-      // L.marker([40.33346, -75.93922]).addTo(mymap)
-      //   .bindPopup("<b>Starting Point</b>").openPopup();
-      // L.circle([40.33346, -75.93922], 100, {
-      //   color: 'red',
-      //   fillColor: '#f03',
-      //   fillOpacity: 0.5
-      // }).addTo(mymap).bindPopup("I am a circle.");
-
       //--------------------------------------------
       //create sidebar
       //--------------------------------------------
       var sidebar = L.control.sidebar('sidebar').addTo(mymap);
-
+      // listen for sidebar event content
+      sidebar.on('content', function(e) {
+        $(".defaultColor:visible").spectrum({
+           color: "#f00",
+           change: function(color) {
+               defaultColor=color.toHexString();
+           }
+         });
+      });
       //--------------------------------------------
       // create marker icon with image path.
       //--------------------------------------------
@@ -109,7 +105,6 @@
           popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
         });
       }
-
       //--------------------------------------------
       // when marker popup is visible run this.
       //--------------------------------------------
@@ -123,7 +118,6 @@
 
          });
       }
-
       //--------------------------------------------
       // when polygon popup is visible run this.
       //--------------------------------------------
@@ -159,7 +153,6 @@
           });
 
       }
-
       //--------------------------------------------
       // when polyline popup is visible run this.
       //--------------------------------------------
@@ -184,7 +177,6 @@
            })
          });
       }
-
       //--------------------------------------------
       // determines what to do when map is clicked.
       //--------------------------------------------
@@ -197,7 +189,7 @@
             currentPolygon.addLatLng(e.latlng);
           } else {
             // create polygon and first point.
-            var p = L.polygon(e.latlng).bindPopup(
+            var p = L.polygon(e.latlng, {color:defaultColor}).bindPopup(
               "<span>Color:</span>"+
               "<input type='button' class='colorpicker' value='Color'/></br>"+
               "<span>Opacity:</span>"+
@@ -229,7 +221,7 @@
             currentLine.addLatLng(e.latlng);
           } else {
             // create polyline and first point.
-            var line = L.polyline([e.latlng], {color: 'green'}).addTo(mymap).bindPopup(
+            var line = L.polyline([e.latlng], {color: defaultColor}).addTo(mymap).bindPopup(
               "<input type='button' class='colorpicker' value='Color'/></br>"+
               "<span>Opacity:</span>"+
               "<div class='opacityslider'>"+
@@ -262,8 +254,12 @@
             tmp = L.marker(e.latlng).bindPopup("<input type='button' value='Delete' class='delete-marker'/>");
           tmp.on("popupopen", onMarkerPopupOpen);
           tmp.addTo(mymap);
+          console.log(tmp.options.icon.options.iconUrl);
+          var s = null;
+          if (tmp.options.icon.options.iconUrl) s = {iconUrl:tmp.options.icon.options.iconUrl};
+          else s = {color:'black'}
           // add it to database using api call
-          var data = {id:mapinfo.id, lat:e.latlng.lat,lng:e.latlng.lng, style:{color:'blue'}, data:{id:1, type:'generic'}};
+          var data = {id:mapinfo.id, lat:e.latlng.lat,lng:e.latlng.lng, style:s, data:{id:1, type:'generic'}};
           $.post('http://localhost:4200/api/data/addmarker/', data, function(returnedData) {
              console.log("marker added."+returnedData);
           });
@@ -275,60 +271,92 @@
             mymap.openPopup(p);
         }
       }
-
       //--------------------------------------------
       // add function to map click environment
       //--------------------------------------------
       mymap.on('click', onMapClick);
 
+      function clearMode() {
+        mode = '';
+        currentLine = null;
+        currentPolygon = null;
+      }
+
+      function addLine() {
+        currentLine.detaildata= {details:"sitting close by me"};
+        console.log(currentLine.detaildata);
+        var points = currentLine.getLatLngs().map(function(object){
+          return {lat:object.lat, lng:object.lng};
+        });
+        if (points.count <=1) return;
+        var linestyle = (currentLine.style) ? currentLine.style : {color:'black'};
+        var data = {id:mapinfo.id, latlngs:points, style:{color:'black'}, data:{type:'generic'}};
+        $.post('http://localhost:4200/api/data/addpolyline', data, function(returnedData) {
+           console.log(returnedData);
+        });
+        currentLine=null;
+      }
+
+      function addPolygon() {
+        var points = currentPolygon.getLatLngs().map(function(object){
+          return {lat:object.lat, lng:object.lng};
+        });
+        if (points.count <=1) return;
+        var linestyle = (currentPolygon.style) ? currentPolygon.style : {color:'black'};
+        var data = {id:mapinfo.id, latlngs:points, style:{color:'black'}, data:{type:'generic'}};
+        $.post('http://localhost:4200/api/data/addpolygon', data, function(returnedData) {
+           console.log("Polygon added.");
+        });
+        currentPolygon=null;
+      }
       //--------------------------------------------
       // do some jquery
       //--------------------------------------------
       $(document).ready(function() {
+
+        $(".mapaddition").bind({
+          click: function() {
+
+            var item = this;
+            var change = false;
+            if ( mode != '' && mode != item.id) change = true;
+
+            if (mode=='polygon' && currentPolygon) {
+              addPolygon();
+              clearMode();
+            } else if (mode == 'line' && currentLine) {
+              addLine();
+              clearMode();
+            } else if (mode == '') {
+              mode = item.id;
+            }
+            if (change) mode=item.id;
+          }
+        });
         //--------------------------------------------
         // polygon add binding
         //--------------------------------------------
-        $('#plyadd').bind({
-          click: function() {
-            if (mode=='polygon') {
-              var points = currentPolygon.getLatLngs().map(function(object){
-                return {lat:object.lat, lng:object.lng};
-              });
-              if (points.count <=1) return;
-              var linestyle = (currentPolygon.style) ? currentPolygon.style : {color:'black'};
-              var data = {id:mapinfo.id, latlngs:points, style:{color:'black'}, data:{type:'generic'}};
-              $.post('http://localhost:4200/api/data/addpolygon', data, function(returnedData) {
-                 console.log("Polygon added.");
-              });
-              mode='';
-              currentPolygon = null;
-            } else {
-              mode='polygon';
-            }
-          }
-        });
+        // $('#plyadd').bind({
+        //   click: function() {
+        //     else {
+        //       clearMode();
+        //       mode='polygon';
+        //     }
+        //   }
+        // });
         //--------------------------------------------
         // line add binding
         //--------------------------------------------
-        $('#lineadd').bind({
-          click: function() {
-            if (mode=='line') {
-              var points = currentLine.getLatLngs().map(function(object){
-                return {lat:object.lat, lng:object.lng};
-              });
-              if (points.count <=1) return;
-              var linestyle = (currentLine.style) ? currentLine.style : {color:'black'};
-              var data = {id:mapinfo.id, latlngs:points, style:{color:'black'}, data:{type:'generic'}};
-              $.post('http://localhost:4200/api/data/addpolyline', data, function(returnedData) {
-                 console.log(returnedData);
-              });
-              mode='';
-              currentLine=null;
-            } else {
-              mode='line';
-            }
-          }
-        });
+        // $('#lineadd').bind({
+        //   click: function() {
+        //
+        //       clearMode();
+        //     } else {
+        //       clearMode();
+        //       mode='line';
+        //     }
+        //   }
+        // });
         //--------------------------------------------
         // class binding for custom-marker on click. (not always visible)
         //--------------------------------------------
@@ -343,12 +371,12 @@
         //--------------------------------------------
         // add marker binding on click.
         //--------------------------------------------
-        $('#mrkadd').bind({
-          click: function() {
-            if (mode=='marker') mode='';
-            else mode='marker';
-          }
-        });
+        // $('#mrkadd').bind({
+        //   click: function() {
+        //     if (mode=='marker') clearMode();
+        //     else mode='marker';
+        //   }
+        // });
         //--------------------------------------------
         // grab image icon marker paths
         //--------------------------------------------
@@ -362,13 +390,76 @@
            });
          });
 
+         $.getJSON('/api/data/mapdata/'+mapinfo.id, function(data) {
+           console.log('indataget');
+           $.each(data.markers, function(index, item) {
+             L.marker(L.latLng(item.lat, item.lng), {icon:iconForImage(item.style.iconUrl)}).bindPopup("<input type='button' value='Delete' class='delete-marker'/>")
+              .on("popupopen", onMarkerPopupOpen)
+              .addTo(mymap);
+           });
+           $.each(data.polygons, function(index, item) {
+             var latlngs = [];
+             $.each(item.latlngs, function(index, item) {
+               latlngs.push(L.latLng(item.lat, item.lng));
+             });
+             var p = L.polygon(latlngs).bindPopup(
+               "<span>Color:</span>"+
+               "<input type='button' class='colorpicker' value='Color'/></br>"+
+               "<span>Opacity:</span>"+
+               "<div class='opacityslider'>"+
+                 "<select class=opacityselect>" +
+                   "<option value=0.0>0.0</option>"+
+                   "<option value=0.1>0.1</option>"+
+                   "<option value=0.2>0.2</option>"+
+                   "<option value=0.3>0.3</option>"+
+                   "<option value=0.4>0.4</option>"+
+                   "<option value=0.5>0.5</option>"+
+                 "   <option value=0.6>0.6</option>"+
+                 "   <option value=0.7>0.7</option>"+
+                 "   <option value=0.8>0.8</option>"+
+                 "   <option value=0.9>0.9</option>"+
+                 "   <option value=1.0>1.0</option>"+
+                 "</select>"+
+               "</div>"+
+               "<input type='button' value='Delete' class='delete-polygon'/>"
+             ).on("popupopen", onPolygonPopupOpen);
+             mymap.addLayer(p);
+           });
+           $.each(data.polylines, function(index, item) {
+             var latlngs = [];
+             $.each(item.latlngs, function(index, item) {
+               latlngs.push(L.latLng(item.lat, item.lng));
+             });
+             var p = L.polyline(latlngs, {color: 'green'}).addTo(mymap).bindPopup(
+               "<input type='button' class='colorpicker' value='Color'/></br>"+
+               "<span>Opacity:</span>"+
+               "<div class='opacityslider'>"+
+                 "<select class=opacityselect>" +
+                   "<option value=0.0>0.0</option>"+
+                   "<option value=0.1>0.1</option>"+
+                   "<option value=0.2>0.2</option>"+
+                   "<option value=0.3>0.3</option>"+
+                   "<option value=0.4>0.4</option>"+
+                   "<option value=0.5>0.5</option>"+
+                 "   <option value=0.6>0.6</option>"+
+                 "   <option value=0.7>0.7</option>"+
+                 "   <option value=0.8>0.8</option>"+
+                 "   <option value=0.9>0.9</option>"+
+                 "   <option value=1.0>1.0</option>"+
+                 "</select>"+
+               "<input type='button' value='Delete' class='delete-polygon'/>"
+             )
+             .on("popupopen", onLinePopupOpen);
+             mymap.addLayer(p);
+           });
+         });
+
+
           // $.getJSON('/api/data/mapid/mymap',function(data) {
           //     mapinfo.id = data.id;
           //     console.log(mapinfo.id);
           //     return;
           // });
-
-         //
       });
       </script>
   </body>

@@ -200,6 +200,18 @@ app.get('/api/data/mapid/:name', function(req, res) {
   });
  });
 
+ app.get('/api/data/mapdata/:id', function(req,res) {
+   r.db("mapsapp").table("maps").get(req.params.id)
+   .run(connection, function(err, cursor) {
+      if(err) {
+        throw err;
+      } else {
+          console.log(cursor);
+          res.send(cursor);
+      }
+   });
+ });
+
 app.get('/map/:id/:name', function(req, res) {
   console.log(req.params.id);
   id = req.params.id;

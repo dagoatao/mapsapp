@@ -7,11 +7,11 @@
   <script src="https://code.jquery.com/jquery-3.0.0.min.js" integrity="sha256-JmvOoLtYsmqlsWxa7mDSLMwa6dZ9rrIdtrrVYRnDRH0=" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js" integrity="sha256-xNjb53/rY+WmG+4L6tTl9m6PpqknWZvRt0rO1SRnJzw=" crossorigin="anonymous"></script>
   <!--<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/south-street/jquery-ui.css"/>-->
-  <link rel="stylesheet" href="style.css"/>
 	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js"></script>
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css">
   <link rel="stylesheet" href="css/leaflet-sidebar.css" />
+  <link rel="stylesheet" href="style.css"/>
   </head>
   <body>
     <div id="titlebar">
@@ -66,6 +66,8 @@
     <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
     <script src="js/leaflet-sidebar.js"></script>
     <script>
+      var mapinfo = {name:'mymap', id:''};
+
       var mymap = L.map('mapid').setView([40.33346, -75.93922], 13);
       L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw', {
         maxZoom: 18,
@@ -85,12 +87,6 @@
       }).addTo(mymap).bindPopup("I am a circle.");
 
       var area;
-      // = L.polygon([
-      //   [40.30544, -75.97518],
-      //   [40.33509, -75.95844],
-      //   [40.33489, -75.93956],
-      //   [40.3057, -75.89802]
-      // ]).addTo(mymap).bindPopup("I am a polygon.");
 
       function iconForImage(path) {
         return L.icon({
@@ -108,6 +104,8 @@
       var customMarker = 0;
       var iconImagePath = null;
       var currentColor=null;
+      var currentPolygon=null;
+      var currentLine=null;
 
       function plySave(layer) {
         if (mymap.hasLayer(layer)) {
@@ -133,12 +131,14 @@
 
          });
       }
+
       function onPolygonPopupOpen() {
          var temp = this;
          // To remove marker on click of delete button in the popup of marker
          $(".delete-polygon:visible").click(function () {
            mymap.removeLayer(temp);
          });
+
          $(".color-polygon:visible").click(function() {
            temp.setStyle({
              color:"black"
@@ -185,10 +185,8 @@
            })
          });
       }
-
-      var currentPolygon=null;
-      var currentLine=null;
       function onMapClick(e) {
+        // console.log(mapinfo);
         if (document.querySelector('#plyadd').value == 1) {
           if (currentPolygon) {
             currentPolygon.addLatLng(e.latlng);
@@ -237,25 +235,36 @@
             tmp = L.marker(e.latlng).bindPopup("<input type='button' value='Delete' class='delete-marker'/>");
           tmp.on("popupopen", onMarkerPopupOpen);
           tmp.addTo(mymap);
+          // console.log(tmp.style);
+          var data = {id:mapinfo.id, lat:e.latlng.lat,lng:e.latlng.lng, style:{color:'blue'}, data:{id:1, type:'generic'}};
+          $.post('http://localhost:4200/api/data/addmarker/', data, function(returnedData) {
+             console.log("marker added."+returnedData);
+          });
         } else {
           p = L.popup()
             .setLatLng(e.latlng)
             .setContent("You clicked the map at "+ e.latlng);
             mymap.openPopup(p);
         }
-
       }
+
       mymap.on('click', onMapClick);
 
       $(document).ready(function() {
-        //$("#markers").append("this there");
-      // if ($("#mrkadd").val()==0) $("#markers").hide();
-
         $('#plyadd').bind({
           click: function() {
             e = $(this);
-            e.val( (e.val()==1) ? 0 : 1 );
-            e.css("background-color", ( (e.val()==1) ? "blue" : "white" ));
+            e.val((e.val()==1) ? 0 : 1 );
+            e.css("background-color", ((e.val()==1) ? "blue" : "white"));
+            var points = currentPolygon.getLatLngs().map(function(object){
+              return {lat:object.lat, lng:object.lng};
+            });
+            if (points.count <=1) return;
+            var linestyle = (currentPolygon.style) ? currentPolygon.style : {color:'black'};
+            var data = {id:mapinfo.id, latlngs:points, style:{color:'black'}, data:{type:'generic'}};
+            $.post('http://localhost:4200/api/data/addpolygon', data, function(returnedData) {
+               console.log("Polygon added.");
+            });
             if (e.val()==0) currentPolygon=null;
           }
         });
@@ -265,7 +274,18 @@
             e = $(this);
             e.val( (e.val()==1) ? 0 : 1 );
             e.css("background-color", ( (e.val()==1) ? "blue" : "white" ));
-            if (e.val()==0) currentLine=null;
+            if (e.val()==0) {
+              var points = currentLine.getLatLngs().map(function(object){
+                return {lat:object.lat, lng:object.lng};
+              });
+              if (points.count <=1) return;
+              var linestyle = (currentLine.style) ? currentLine.style : {color:'black'};
+              var data = {id:mapinfo.id, latlngs:points, style:{color:'black'}, data:{type:'generic'}};
+              $.post('http://localhost:4200/api/data/addpolyline', data, function(returnedData) {
+                 console.log(returnedData);
+              });
+              currentLine=null;
+            }
           }
         });
 
@@ -284,39 +304,36 @@
           }
         });
 
-
         $('#mrkadd').bind({
           click: function() {
             if ($(this).val() == 1) {
               $(this).val(0);
               $(this).css("background-color", "white");
-              //$("#markers").hide();
-              //$("#f").html(" ");
             } else {
               $(this).val(1);
               $(this).css("background-color", "blue");
-              // $("#markers").show();
-              //$('#f').html("<input type='text' title='marker' value=''/><button id='whatisit'>Save</button>");
             }
           }
         });
 
-        //$("button img").button();
-        $.getJSON( "/api/markers", function( data ) {
+        $.getJSON( "/api/markers", function(data) {
            var items = [];
            var count = 0;
-           $.each( data, function( index, val ) {
+           $.each(data, function(index, val) {
              //$("#markers").append(index);
              //if ( index > 15) return;
              $("#markers").append('<button id="ico'+index+'" class="custom-marker" value=0><img src="images/markers/'+val+'" style="width:23px;height:23px;"/></button>');
            });
          });
 
+          $.getJSON('/api/data/mapid/mymap',function(data) {
+              mapinfo.id = data.id;
+              console.log(mapinfo.id);
+              return;
+          });
+
+         //
       });
-
-
-
-
       </script>
   </body>
   </html>

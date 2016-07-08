@@ -3,6 +3,7 @@ var express = require('express');
 var bodyParser = require("body-parser");
 var sockio = require("socket.io");
 var fs = require("fs");
+var handlebars = require("handlebars");
 
 var connection = null;
 r.connect({host:'localhost', port: 28015}, function(err, conn) {
@@ -92,6 +93,18 @@ var io = sockio.listen(app.listen(4200), {log:true});
 app.get('/api/markers', function (req, res) {
   fs.readdir("public/images/markers", function(err, items) {
     res.send(JSON.stringify(items));
+  });
+});
+
+app.get('/api/data/maps', function (req, res) {
+
+  r.db('mapsapp').table('maps')
+  .run(connection, function(err, cursor) {
+    var maparray = [];
+    cursor.toArray(function(err, results) {
+      res.send(results);
+      console.log(results);
+    });
   });
 });
 
@@ -185,4 +198,14 @@ app.get('/api/data/mapid/:name', function(req, res) {
       });
     }
   });
+ });
+
+app.get('/map/:id/:name', function(req, res) {
+  console.log(req.params.id);
+  id = req.params.id;
+  var source = fs.readFileSync('public/map.html');
+  var template = handlebars.compile(source.toString());
+  var data = {mapid:req.params.id, mapname:req.params.name};
+  var result = template(data);
+  res.send(result);
 });

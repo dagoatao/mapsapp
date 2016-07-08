@@ -9,8 +9,8 @@
     width: 40px; }
   @media (min-width: 768px) {
     .sidebar {
-      top: 10px;
-      bottom: 10px;
+      top: 20%;
+      bottom: 15%;
       transition: width 500ms; } }
   @media (min-width: 768px) and (max-width: 991px) {
     .sidebar {
@@ -20,7 +20,9 @@
       width: 390px; } }
   @media (min-width: 1200px) {
     .sidebar {
-      width: 460px; } }
+      /*width: 460px; */
+      width:380px;
+      } }
 
 .sidebar-left {
   left: 0; }
@@ -110,7 +112,7 @@
       min-width: 350px; } }
   @media (min-width: 1200px) {
     .sidebar-pane {
-      min-width: 420px; } }
+      min-width: 320px; } }
 
 .sidebar-header {
   margin: -10px -20px 0;

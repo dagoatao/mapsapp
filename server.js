@@ -130,19 +130,6 @@ app.get('/api/data/addmap/:name/:desc', function(req, res) {
   });
 });
 
-// identifier is the array value.
-// app.get('/api/data/addmarker/:id/:lng/:lat/:style/:data', function(req, res) {
-//    r.db("mapsapp")
-//    .table("maps").get(req.params.id).update({
-//        markers:r.row('markers').append({lat:req.params.lat, lng:req.params.lng, style:req.params.style, data:req.params.data})
-//    }).run(connection, function(err, results) {
-//      if (err) throw err;
-//      console.log(results);
-//      if ( results.replaced == 1) res.send("added");
-//      else res.send("problem");
-//     });
-// });
-
 app.post('/api/data/addmarker', function(req, res) {
   console.log('in add marker post');
    r.db("mapsapp")

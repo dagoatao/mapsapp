@@ -67,7 +67,6 @@
       var currentLine=null;
       var mode = '';
       var mapinfo = {name:document.querySelector('#tmapname').value, id:document.querySelector('#tmapid').value};
-
       //--------------------------------------------
       // create map
       //--------------------------------------------
@@ -334,30 +333,6 @@
           }
         });
         //--------------------------------------------
-        // polygon add binding
-        //--------------------------------------------
-        // $('#plyadd').bind({
-        //   click: function() {
-        //     else {
-        //       clearMode();
-        //       mode='polygon';
-        //     }
-        //   }
-        // });
-        //--------------------------------------------
-        // line add binding
-        //--------------------------------------------
-        // $('#lineadd').bind({
-        //   click: function() {
-        //
-        //       clearMode();
-        //     } else {
-        //       clearMode();
-        //       mode='line';
-        //     }
-        //   }
-        // });
-        //--------------------------------------------
         // class binding for custom-marker on click. (not always visible)
         //--------------------------------------------
         $("body").on('click','.custom-marker', function() {
@@ -368,15 +343,6 @@
             iconImagePath = (e.val()==1) ? e.children().first().attr('src') : null;
             $("#markers").append(iconImagePath);
         });
-        //--------------------------------------------
-        // add marker binding on click.
-        //--------------------------------------------
-        // $('#mrkadd').bind({
-        //   click: function() {
-        //     if (mode=='marker') clearMode();
-        //     else mode='marker';
-        //   }
-        // });
         //--------------------------------------------
         // grab image icon marker paths
         //--------------------------------------------
@@ -453,13 +419,6 @@
              mymap.addLayer(p);
            });
          });
-
-
-          // $.getJSON('/api/data/mapid/mymap',function(data) {
-          //     mapinfo.id = data.id;
-          //     console.log(mapinfo.id);
-          //     return;
-          // });
       });
       </script>
   </body>

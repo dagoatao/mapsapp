@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html ng-app="recat">
+  <head>
+    <title>Leaflet Quick Start Guide Example</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="js/jquery.js"</script>
+  <script src="js/jquery-ui.min.js"</script>
+  <link rel="stylesheet" href="style.css"/>
+
+  <body>
+    <div id='output'>
+    </div>
+    <input type=hidden value="21a2e1fb-1ed4-4a12-a1a2-6aec21014e20" id="tmapid"/>
+    <input type=hidden value="mynesdklsdp" id="tmapname"/>
+  </body>
+  <script>
+    $(document).ready(function(){
+      console.log('something');
+      var mapinfo = {name:document.querySelector('#tmapname').value, id:document.querySelector('#tmapid').value};
+      $.getJSON('/api/data/mapdata/'+mapinfo.id, function(data) {
+        console.log('indataget');
+        $.each(data.markers, function(index, item) {
+          console.log(JSON.stringify(item));
+        });
+      });
+
+    });
+  </script>
+  </html>

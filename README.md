@@ -6,20 +6,20 @@ General purpose mapping micro-app with the ability to add map-markers, map-polyg
 
 Can be easily extended for a variety of needs.
 
-1. Download repository ^^
-2. From the command line:
+Step 1 - Download repository ^^
+Step 2 - From the command line:
 ```
 npm install  
 ```
-3. Start rethinkdb on command line:
+Step 3 - Start rethinkdb on command line:
 ```
 rethinkdb
 ```
-4. Start mapsapp forever:
+Step 4 - Start mapsapp forever:
 ```
 forever server.js
 ```
-5. Open up a webbrowser for location http://localhost:4200
+Step 5 - Open up a webbrowser for location http://localhost:4200
 
 ##RethinkDB
 Rethinkdb requires a seperate download for mac or windows. It is not installed with npm. You can find instructions [here](https://rethinkdb.com/docs/quickstart/).

@@ -1,0 +1,35 @@
+{
+  "name": "mapsapp",
+  "version": "0.0.1",
+  "description": "Maps by Michael Colon.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mcolonj/mapsapp"
+  },
+  "author": "Michael Colon",
+  "license": "GPL-3.0",
+  "keywords": [
+    "leaflet",
+    "node.js",
+    "express.js",
+    "jquery",
+    "maps",
+    "markers",
+    "polygons",
+    "polylines"
+  ],
+  "dependencies": {
+    "express":"4.14.0",
+    "forever":"0.15.2",
+    "body-parser":"1.14.2",
+    "socket.io":"1.4.8",
+    "handlebars":"4.0.5"
+
+
+  }
+}
